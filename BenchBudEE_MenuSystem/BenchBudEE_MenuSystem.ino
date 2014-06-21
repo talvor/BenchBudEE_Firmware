@@ -8,76 +8,131 @@
 // 				Phillip Hall
 //
 // Date			19/06/2014 9:47 pm
-// Version		<#version#>
+// Version		1.0
 // 
 // Copyright	© Phillip Hall, 2014
-// License		<#license#>
+
+// This sketch runs a number of timers perform the following tasks
+//    - collect data from the hardware devices
+//    - execute repetitive tasks
 //
-// See			ReadMe.txt for references
-//
+// The display system will be in one of two modes;
+//    - Data mode (Displays information from the hardware devices on screen)
+//    - Menu mode (Displays the menu system)
+// The modes are switched out via key presses.  The Display starts in Data mode and when a keypress
+// is registered it will switch to Menu mode.  Then when no key presses are registered for 3 seconds
+// the display mode will switch back to Data mode
+
 
 // Core library for code-sense
-#if defined(WIRING) // Wiring specific
-#include "Wiring.h"
-#elif defined(MAPLE_IDE) // Maple specific
-#include "WProgram.h"   
-#elif defined(MICRODUINO) // Microduino specific
 #include "Arduino.h"
-#elif defined(MPIDE) // chipKIT specific
-#include "WProgram.h"
-#elif defined(DIGISPARK) // Digispark specific
-#include "Arduino.h"
-#elif defined(ENERGIA) // LaunchPad MSP430, Stellaris and Tiva, Experimeter Board FR5739 specific
-#include "Energia.h"
-#elif defined(TEENSYDUINO) // Teensy specific
-#include "Arduino.h"
-#elif defined(ARDUINO) // Arduino 1.0 and 1.5 specific
-#include "Arduino.h"
-#else // error
-#error Platform not defined
-#endif
+#include "Constants.h"
+#include "MenuSystem.h"
+#include "Timer.h"
+#include "SPI.h"
 
-// Include application, user and local libraries
+// Menu modules
+#include "FanMenu.h"
+#include "LEDMenu.h"
+#include "RelayMenu.h"
 
+// Hardware Objects
+#include "Relay.h"
+#include "MCP4801.h"
+#include "Fan.h"
+#include "VADJMonitor.h"
 
-// Define variables and constants
-//
-// Brief	Name of the LED
-// Details	Each board has a LED but connected to a different pin
-//
-uint8_t myLED;
-
+// Utilities
+#include "Display.h"
 
 //
 // Brief	Setup
-// Details	Define the pin the LED is connected to
-//
-// Add setup code 
-void setup() {
-  // myLED pin number
-#if defined(ENERGIA) // All LaunchPads supported by Energia
-    myLED = RED_LED;
-#elif defined(DIGISPARK) // Digispark specific
-    myLED = 1; // assuming model A
-#elif defined(MAPLE_IDE) // Maple specific
-    myLED = BOARD_LED_PIN;
-#elif defined(WIRING) // Wiring specific
-    myLED = 15;
-#else // Arduino, chipKIT, Teensy specific
-    myLED = 13;
-#endif
+// Details  Define variables and constants
+Timer hardwareTimer;
+Timer displayTimer;
 
-    pinMode(myLED, OUTPUT);
+int serialHandlerLastKeyPressed; // When was the last key press registered.
+
+//
+// Brief	Setup
+// Details	Create system objects
+MenuSystem menuSystem;
+Menu rootMenu("BenchBudEE");
+
+//
+// Brief	Setup
+// Details	Create hardware objects
+Relay relay(RELAY_ENABLE);
+MCP4801 mcp4801(DAC_CS_N, DAC_SHDN_N);
+Fan fan(FAN_MODE, FAN_PWM);
+VADJMonitor vadjMonitor(VADJ_MON);
+
+//
+// Brief	Setup
+void setup() {
+    Serial.begin(9600);
+
+    SPI.setClockDivider(SPI_CLOCK_DIV128);
+    SPI.setDataMode(SPI_MODE0);
+    SPI.begin();
+    
+    rootMenu.add_menu(fanMenuSetup());
+    rootMenu.add_menu(ledMenuSetup());
+    rootMenu.add_menu(relayMenuSetup());
+
+    menuSystem.set_root_menu(&rootMenu);
+    
+    relay.begin();
+    mcp4801.begin();
+    fan.begin();
+    vadjMonitor.begin();
+    
+    displayStartDataTimer();
+    
 }
 
 //
 // Brief	Loop
-// Details	Blink the LED
-//
-// Add loop code 
+
+void serialHandler();
+
 void loop() {
-    digitalWrite(myLED, HIGH);
-    delay(500);
-    digitalWrite(myLED, LOW);
-    delay(500);    
+    hardwareTimer.update();
+    displayTimer.update();
+    
+    serialHandler();
+}
+
+void serialHandler() {
+    char inChar;
+    if((inChar = Serial.read())>0) {
+        if (displayMode() == DISPLAY_MODE_DATA) {
+            displayStopDataTimer();
+            displayRedrawMenu();
+            
+        } else {
+            switch (inChar) {
+                case 'w': // Previous item
+                    menuSystem.prev();
+                    displayRedrawMenu();
+                    break;
+                case 's': // Next item
+                    menuSystem.next();
+                    displayRedrawMenu();
+                    break;
+                case 'a': // Back pressed
+                    menuSystem.back();
+                    displayRedrawMenu();
+                    break;
+                case 'd': // Select pressed
+                    menuSystem.select(false);
+                    displayRedrawMenu();
+                    break;
+                default:
+                    break;
+            }
+        }
+        
+        displayDelayDataTimer();
+    }
 }
