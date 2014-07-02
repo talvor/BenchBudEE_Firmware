@@ -22,6 +22,9 @@
 #ifndef Display_h
 #define Display_h
 
+#define DISPLAY_MODE_MENU 0
+#define DISPLAY_MODE_DATA 1
+
 #define TERM_NUM_LINES 23
 
 int displayMode();

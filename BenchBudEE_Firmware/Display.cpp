@@ -1,3 +1,5 @@
+#include <MemoryFree.h>
+
 //
 // Display.cpp 
 // C++ code
@@ -20,8 +22,11 @@
 #include "Timer.h"
 #include "LEDDriver.h"
 #include "MCP3901.h"
-#include "MemoryFree.h"
+//#include "MemoryFree.h"
 
+// Display modes
+#define DISPLAY_MODE_SWITCH_DELAY 1500
+#define DISPLAY_UPDATE_FREQUENCY 200
 
 extern MenuSystem menuSystem;
 extern Relay relay;
@@ -78,11 +83,10 @@ void displayRedrawData() {
     _lineCount = _lineCount + mcp3901.printData();
     _lineCount = _lineCount + vadjMonitor.printData();
     
-    Serial.print("Free memory = ");
-    Serial.print(freeMemory());
-    Serial.println(" bytes");
-    
-    _lineCount = _lineCount + 1;
+    //Serial.print("Free memory = ");
+    //Serial.print(freeMemory());
+    //Serial.println(" bytes");
+    //_lineCount = _lineCount + 1;
     
     padScreen();
 }

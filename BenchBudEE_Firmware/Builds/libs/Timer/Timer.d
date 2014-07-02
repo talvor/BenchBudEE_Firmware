@@ -9,7 +9,6 @@ Builds/libs/Timer/Timer.o:  \
   /Applications/Arduino.app/Contents/Resources/Java/hardware/arduino/cores/arduino/Print.h \
   /Applications/Arduino.app/Contents/Resources/Java/hardware/arduino/cores/arduino/Printable.h \
   /Applications/Arduino.app/Contents/Resources/Java/hardware/arduino/cores/arduino/new.h \
-  /Applications/Arduino.app/Contents/Resources/Java/hardware/arduino/cores/arduino/USBAPI.h \
-  /Applications/Arduino.app/Contents/Resources/Java/hardware/arduino/variants/leonardo/pins_arduino.h \
+  /Applications/Arduino.app/Contents/Resources/Java/hardware/arduino/variants/standard/pins_arduino.h \
   /Users/phillip/Dropbox/Arduino/libraries/Timer/Timer.h \
   /Users/phillip/Dropbox/Arduino/libraries/Timer/Event.h

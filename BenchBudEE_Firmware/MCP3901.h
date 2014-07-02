@@ -48,6 +48,11 @@ private:
     float _ch0Volts;
     float _ch1Value;
     float _ch1Volts;
+    
+    float _lmt84Volts;
+    float _lmt84Temp;
+    
+    float _ch1VoltDivider;
 };
 
 #endif

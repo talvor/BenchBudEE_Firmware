@@ -1497,7 +1497,7 @@
 /* Begin XCBuildConfiguration section */
 		297E591B19530547000C492D /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 297E58DE19530547000C492D /* Arduino Leonardo.xcconfig */;
+			baseConfigurationReference = 297E58E119530547000C492D /* Arduino Mini with ATmega328-5V.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";

@@ -13,6 +13,8 @@
 #include "LEDMenu.h"
 #include "LEDDriver.h"
 
+#define LED_BRIGHTNESS_STEP 10
+
 extern LEDDriver led;
 
 // Code

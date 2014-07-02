@@ -14,6 +14,10 @@
 #include "VADJMonitor.h"
 #include "Timer.h"
 
+#define REFVOLTS 5.0
+#define R22 3000
+#define R23 1000
+
 extern Timer hardwareTimer;
 extern VADJMonitor vadjMonitor;
 
@@ -25,7 +29,7 @@ VADJMonitor::VADJMonitor(int vadjMonitorPin) {
     //Convert resistor values to division value
     //  Equation is previously mentions voltage divider equation
     //  R2 / (R1 + R2)
-    _denominator = (float)R2 / (R1 + R2);
+    _denominator = (float)R23 / (R22 + R23);
 }
 
 VADJMonitor::~VADJMonitor() {

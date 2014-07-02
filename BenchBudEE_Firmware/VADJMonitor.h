@@ -19,10 +19,6 @@
 #ifndef VADJMonitor__h
 #define VADJMonitor__h
 
-#define REFVOLTS 5.0
-#define R1 3000
-#define R2 1000
-
 class VADJMonitor {
   
 public:
